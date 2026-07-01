@@ -7,8 +7,6 @@
 <meta name="theme-color" content="#FFFFFF">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="mobile-web-app-capable" content="yes">
-<link rel="manifest" href="manifest.json">
 <style>
 :root {
   --bg: #FAFAFA;
@@ -258,14 +256,33 @@ body {
 .ex-item {
   margin:8px 0 8px 16px; padding:10px 14px;
   background:#FAFAFA; border-radius:6px;
-  cursor:pointer; user-select:none; border-left:3px solid var(--accent2);
+  user-select:none; border-left:3px solid var(--accent2);
 }
 .ex-item .ex-en { font-size:14px; color:var(--text); line-height:1.6; }
-.ex-item .ex-cn {
-  font-size:13px; color:transparent; margin-top:4px; line-height:1.5;
-  transition:color 0.2s;
+.ex-word {
+  border-bottom:1px dashed var(--accent2);
+  cursor:pointer;
+  transition:background 0.15s;
 }
-.ex-item.revealed .ex-cn { color:var(--text2); }
+.ex-word:hover { background:rgba(255,221,87,0.25); }
+.ex-cn-btn {
+  display:inline-block;
+  margin-top:4px;
+  padding:1px 8px;
+  font-size:11px;
+  color:var(--text3);
+  background:#fff;
+  border:1px solid var(--divider);
+  border-radius:10px;
+  cursor:pointer;
+  user-select:none;
+}
+.ex-cn-btn:hover { color:var(--accent2); border-color:var(--accent2); }
+.ex-item .ex-cn {
+  font-size:13px; color:var(--text2); margin-top:4px; line-height:1.5;
+  display:none;
+}
+.ex-item.cn-revealed .ex-cn { display:block; }
 
 /* ═══════════ COLLOCATIONS TAB ═══════════ */
 .col-list { list-style:none; }
@@ -69645,8 +69662,9 @@ function switchTab(idx, el) {
             if (ps.grammar) html += ' <span class="ps-grammar">' + esc(ps.grammar) + '</span>';
             if (ps.examples && ps.examples.length) {
               ps.examples.forEach(function (ex) {
-                html += '<div class="ex-item" onclick="event.stopPropagation();this.classList.toggle(\'revealed\')">';
-                html += '<div class="ex-en">' + esc(ex.en) + '</div>';
+                html += '<div class="ex-item">';
+                html += renderExampleEn(ex.en);
+                html += '<button class="ex-cn-btn" onclick="event.stopPropagation();this.parentElement.classList.toggle(\'cn-revealed\')">中</button>';
                 html += '<div class="ex-cn">' + esc(ex.cn) + '</div>';
                 html += '</div>';
               });
@@ -69660,8 +69678,9 @@ function switchTab(idx, el) {
             if (s.cnDef) html += ' <span class="ps-cn">' + esc(s.cnDef) + '</span>';
             if (s.examples && s.examples.length) {
               s.examples.forEach(function (ex) {
-                html += '<div class="ex-item" onclick="event.stopPropagation();this.classList.toggle(\'revealed\')">';
-                html += '<div class="ex-en">' + esc(ex.en) + '</div>';
+                html += '<div class="ex-item">';
+                html += renderExampleEn(ex.en);
+                html += '<button class="ex-cn-btn" onclick="event.stopPropagation();this.parentElement.classList.toggle(\'cn-revealed\')">中</button>';
                 html += '<div class="ex-cn">' + esc(ex.cn) + '</div>';
                 html += '</div>';
               });
@@ -69685,8 +69704,9 @@ function switchTab(idx, el) {
           // Examples for this sense
           if (s.examples && s.examples.length) {
             s.examples.forEach(function (ex) {
-              html += '<div class="ex-item" onclick="event.stopPropagation();this.classList.toggle(\'revealed\')">';
-              html += '<div class="ex-en">' + esc(ex.en) + '</div>';
+              html += '<div class="ex-item">';
+              html += renderExampleEn(ex.en);
+              html += '<button class="ex-cn-btn" onclick="event.stopPropagation();this.parentElement.classList.toggle(\'cn-revealed\')">中</button>';
               html += '<div class="ex-cn">' + esc(ex.cn) + '</div>';
               html += '</div>';
             });
@@ -69701,8 +69721,9 @@ function switchTab(idx, el) {
             // Examples for sub-phrase
             if (sp.examples && sp.examples.length) {
               sp.examples.forEach(function (ex) {
-                html += '<div class="ex-item" onclick="event.stopPropagation();this.classList.toggle(\'revealed\')">';
-                html += '<div class="ex-en">' + esc(ex.en) + '</div>';
+                html += '<div class="ex-item">';
+                html += renderExampleEn(ex.en);
+                html += '<button class="ex-cn-btn" onclick="event.stopPropagation();this.parentElement.classList.toggle(\'cn-revealed\')">中</button>';
                 html += '<div class="ex-cn">' + esc(ex.cn) + '</div>';
                 html += '</div>';
               });
@@ -69871,12 +69892,353 @@ function updateStudyProg() {
 function esc(s) { const e = document.createElement('span'); e.textContent = s || ''; return e.innerHTML; }
 
 // ═══════════════════════════════════
+//  例句渲染:单词 span 化(可点击查词)
+// ═══════════════════════════════════
+function renderExampleEn(en) {
+  var tokens = String(en||'').split(/(\s+)/);
+  var html = '<div class="ex-en">';
+  tokens.forEach(function (tok) {
+    if (/^\s+$/.test(tok)) { html += esc(tok); return; }
+    var clean = tok.toLowerCase().replace(/[^a-z'-]/g, '');
+    if (!clean) { html += esc(tok); return; }
+    html += '<span class="ex-word" data-word="' + esc(clean) + '">' + esc(tok) + '</span>';
+  });
+  html += '</div>';
+  return html;
+}
+
+// ═══════════════════════════════════
+//  词典导入模块(IndexedDB)
+// ═══════════════════════════════════
+var DICT_DB = 'longman_dict';
+var DICT_STORE = 'words';
+var DICT_FLAG = 'dict_imported_v1';
+
+function openDictDB() {
+  return new Promise(function (resolve, reject) {
+    var req = indexedDB.open(DICT_DB, 1);
+    req.onupgradeneeded = function (e) {
+      var db = e.target.result;
+      if (!db.objectStoreNames.contains(DICT_STORE)) {
+        db.createObjectStore(DICT_STORE, { keyPath: 'word' });
+      }
+    };
+    req.onsuccess = function (e) { resolve(e.target.result); };
+    req.onerror = function (e) { reject(e.target.error); };
+  });
+}
+
+function dictGet(word) {
+  return openDictDB().then(function (db) {
+    return new Promise(function (resolve, reject) {
+      var tx = db.transaction(DICT_STORE, 'readonly');
+      var st = tx.objectStore(DICT_STORE);
+      var req = st.get(word.toLowerCase());
+      req.onsuccess = function () { resolve(req.result || null); };
+      req.onerror = function () { reject(req.error); };
+    });
+  });
+}
+
+// 词形还原:生成可能的词原形候选(复数/现在分词/过去式/过去分词/比较级/最高级)
+function lemmatize(word) {
+  var w = word.toLowerCase();
+  var cands = [];
+  function add(c) { if (c && c.length >= 2 && cands.indexOf(c) < 0) cands.push(c); }
+  function doubled(s) { return s.length > 2 && s.charAt(s.length - 1) === s.charAt(s.length - 2); }
+  // 现在分词 -ing
+  if (w.length > 4 && w.endsWith('ing')) {
+    var s = w.slice(0, -3);
+    add(s);                       // running -> runn
+    if (doubled(s)) add(s.slice(0, -1)); // running -> run
+    add(s + 'e');                 // making -> make
+    if (w.endsWith('ying')) add(w.slice(0, -4) + 'ie'); // dying -> die
+  }
+  // 过去式/过去分词 -ed
+  if (w.length > 3 && w.endsWith('ed')) {
+    var s2 = w.slice(0, -2);
+    add(s2);                      // liked -> lik
+    add(s2 + 'e');                // liked -> like
+    if (doubled(s2)) add(s2.slice(0, -1)); // stopped -> stop
+    if (w.endsWith('ied')) add(w.slice(0, -3) + 'y'); // carried -> carry
+  }
+  // 过去分词 -en
+  if (w.length > 3 && w.endsWith('en')) {
+    var s3 = w.slice(0, -2);
+    add(s3);                      // broken -> brok
+    add(s3 + 'e');                // broken -> broke
+    if (doubled(s3)) add(s3.slice(0, -1)); // written -> write
+  }
+  // 复数 -s/-es/-ies/-ves
+  if (w.length > 3 && w.endsWith('s') && !w.endsWith('ss')) {
+    add(w.slice(0, -1));          // cats -> cat
+    if (w.endsWith('es')) {
+      add(w.slice(0, -2));        // boxes -> box, dishes -> dish
+      add(w.slice(0, -2) + 'is'); // analyses -> analysis
+    }
+    if (w.endsWith('ies')) {
+      add(w.slice(0, -3) + 'y');  // cities -> city
+      add(w.slice(0, -3) + 'ie'); // ties -> tie
+    }
+    if (w.endsWith('ves')) {
+      add(w.slice(0, -3) + 'f');  // wolves -> wolf
+      add(w.slice(0, -3) + 'fe'); // knives -> knife
+    }
+  }
+  // 比较级 -er
+  if (w.length > 4 && w.endsWith('er') && !w.endsWith('eer')) {
+    var s4 = w.slice(0, -2);
+    add(s4);                      // taller -> tall
+    add(s4 + 'e');                // larger -> large
+    if (doubled(s4)) add(s4.slice(0, -1)); // bigger -> big
+  }
+  // 最高级 -est
+  if (w.length > 4 && w.endsWith('est')) {
+    var s5 = w.slice(0, -3);
+    add(s5);                      // tallest -> tall
+    add(s5 + 'e');                // largest -> large
+    if (doubled(s5)) add(s5.slice(0, -1)); // biggest -> big
+  }
+  return cands;
+}
+
+// 智能查词:先精确查,未命中则按词形还原候选依次尝试
+function dictLookup(word) {
+  word = word.toLowerCase();
+  return dictGet(word).then(function (rec) {
+    if (rec) return { rec: rec, matchedAs: word };
+    var cands = lemmatize(word);
+    return cands.reduce(function (p, cand) {
+      return p.then(function (prev) {
+        if (prev) return prev;
+        return dictGet(cand).then(function (r) {
+          return r ? { rec: r, matchedAs: cand } : null;
+        });
+      });
+    }, Promise.resolve(null));
+  });
+}
+
+function importDict(onProgress) {
+  return fetch('longman_dict.json').then(function (r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  }).then(function (data) {
+    var words = Object.keys(data);
+    var total = words.length;
+    return openDictDB().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var done = 0;
+        var i = 0;
+        function nextBatch() {
+          if (i >= total) { resolve({ total: total, done: done }); return; }
+          var tx = db.transaction(DICT_STORE, 'readwrite');
+          var st = tx.objectStore(DICT_STORE);
+          var end = Math.min(i + 5000, total);
+          for (var j = i; j < end; j++) {
+            var w = words[j];
+            var rec = data[w];
+            rec.word = w.toLowerCase();
+            st.put(rec);
+          }
+          tx.oncomplete = function () {
+            done = end;
+            i = end;
+            if (onProgress) onProgress(done, total);
+            nextBatch();
+          };
+          tx.onerror = function () { reject(tx.error); };
+        }
+        nextBatch();
+      });
+    });
+  });
+}
+
+// ═══════════════════════════════════
+//  弹窗组件
+// ═══════════════════════════════════
+var popupEl = null;
+
+function ensurePopup() {
+  if (popupEl) return popupEl;
+  popupEl = document.createElement('div');
+  popupEl.id = 'wordPopup';
+  popupEl.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.3);display:none;z-index:9999;align-items:flex-start;justify-content:center;padding:40px 20px;';
+  popupEl.innerHTML = '<div id="popupBox" style="background:#fff;max-width:520px;width:100%;max-height:80vh;overflow:auto;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.2);padding:20px 24px;"></div>';
+  popupEl.addEventListener('click', function (e) { if (e.target === popupEl) closePopup(); });
+  document.body.appendChild(popupEl);
+  return popupEl;
+}
+
+function closePopup() { if (popupEl) popupEl.style.display = 'none'; }
+
+function renderPopupContent(rec) {
+  if (!rec) return '<div style="color:#999;text-align:center;padding:20px;">未收录该词</div>';
+  var h = '';
+  h += '<div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid #eee;padding-bottom:8px;margin-bottom:10px;">';
+  h += '<div><span style="font-size:22px;font-weight:bold;">' + esc(rec.word) + '</span>';
+  if (rec.phonetic && (rec.phonetic.uk || rec.phonetic.us)) {
+    h += ' <span style="color:#888;font-size:14px;">/' + esc(rec.phonetic.uk || rec.phonetic.us) + '/</span>';
+  }
+  if (rec.pos && rec.pos.length) {
+    h += ' <span style="color:var(--accent2);font-size:13px;">' + esc(rec.pos.join(' ')) + '</span>';
+  }
+  h += '</div><span style="cursor:pointer;color:#999;font-size:20px;" onclick="closePopup()">×</span></div>';
+  // 义项
+  if (rec.senses && rec.senses.length) {
+    rec.senses.forEach(function (s) {
+      h += '<div style="margin:8px 0;">';
+      if (s.num) h += '<span style="color:var(--accent2);font-weight:bold;">' + esc(s.num) + '.</span> ';
+      if (s.phrase) h += '<span style="font-weight:bold;color:#333;">' + esc(s.phrase) + '</span> ';
+      if (s.enDef) h += '<span style="color:#333;">' + esc(s.enDef) + '</span> ';
+      if (s.cnDef) h += '<span style="color:#666;">' + esc(s.cnDef) + '</span>';
+      if (s.examples && s.examples.length) {
+        s.examples.forEach(function (ex) {
+          h += '<div style="margin:4px 0 4px 16px;font-size:13px;">';
+          h += '<div class="popup-ex-en">' + renderExampleEn(ex.en) + '</div>';
+          if (ex.cn) h += '<div style="color:#888;">' + esc(ex.cn) + '</div>';
+          h += '</div>';
+        });
+      }
+      if (s.subs && s.subs.length) {
+        s.subs.forEach(function (sub) {
+          h += '<div style="margin:4px 0 4px 16px;">';
+          if (sub.letter) h += '<span style="color:var(--accent2);">' + esc(sub.letter) + '</span> ';
+          if (sub.enDef) h += '<span style="color:#333;">' + esc(sub.enDef) + '</span> ';
+          if (sub.cnDef) h += '<span style="color:#666;">' + esc(sub.cnDef) + '</span>';
+          if (sub.examples && sub.examples.length) {
+            sub.examples.forEach(function (ex) {
+              h += '<div style="margin:4px 0 4px 16px;font-size:13px;">';
+              h += '<div class="popup-ex-en">' + renderExampleEn(ex.en) + '</div>';
+              if (ex.cn) h += '<div style="color:#888;">' + esc(ex.cn) + '</div>';
+              h += '</div>';
+            });
+          }
+          h += '</div>';
+        });
+      }
+      h += '</div>';
+    });
+  }
+  // 搭配
+  if (rec.collocations && rec.collocations.length) {
+    h += '<div style="margin-top:12px;border-top:1px solid #eee;padding-top:8px;font-size:13px;"><b>搭配</b><div style="margin-top:4px;">';
+    rec.collocations.forEach(function (c) {
+      h += '<div style="margin:2px 0;"><span class="popup-link" data-word="' + esc((c.phrase||'').split(/\s+/)[0].toLowerCase().replace(/[^a-z'-]/g,'')) + '" style="color:var(--accent2);">' + esc(c.phrase) + '</span>';
+      if (c.cn) h += ' <span style="color:#666;">' + esc(c.cn) + '</span>';
+      h += '</div>';
+    });
+    h += '</div></div>';
+  }
+  // 词族
+  if (rec.word_family) {
+    var wfPos = Object.keys(rec.word_family);
+    if (wfPos.length) {
+      h += '<div style="margin-top:12px;border-top:1px solid #eee;padding-top:8px;font-size:13px;"><b>词族</b><div style="margin-top:4px;">';
+      wfPos.forEach(function (pos) {
+        h += '<div><span style="color:#999;">' + esc(pos) + ':</span> ';
+        (rec.word_family[pos] || []).forEach(function (w, i) {
+          if (i) h += ', ';
+          h += '<span class="popup-link" data-word="' + esc(w.toLowerCase()) + '" style="color:var(--accent2);cursor:pointer;">' + esc(w) + '</span>';
+        });
+        h += '</div>';
+      });
+      h += '</div></div>';
+    }
+  }
+  // 同义词
+  if (rec.synonyms && rec.synonyms.synonyms && rec.synonyms.synonyms.length) {
+    h += '<div style="margin-top:12px;border-top:1px solid #eee;padding-top:8px;font-size:13px;"><b>同义词</b> ';
+    rec.synonyms.synonyms.forEach(function (s, i) {
+      if (i) h += ', ';
+      h += '<span class="popup-link" data-word="' + esc(s.toLowerCase()) + '" style="color:var(--accent2);cursor:pointer;">' + esc(s) + '</span>';
+    });
+    h += '</div>';
+  }
+  return h;
+}
+
+function showWordPopup(word) {
+  if (!word) return;
+  word = word.toLowerCase();
+  var p = ensurePopup();
+  var box = p.querySelector('#popupBox');
+  box.innerHTML = '<div style="color:#999;text-align:center;padding:30px;">查询中…</div>';
+  p.style.display = 'flex';
+  dictLookup(word).then(function (hit) {
+    var rec = hit ? hit.rec : null;
+    box.innerHTML = renderPopupContent(rec);
+    if (rec && hit.matchedAs !== word) {
+      var note = document.createElement('div');
+      note.style.cssText = 'background:#fff8e1;color:#8a6d3b;padding:6px 10px;margin-bottom:10px;border-radius:4px;font-size:13px;';
+      note.innerHTML = '已显示原形: <b>' + esc(hit.matchedAs) + '</b>（由 ' + esc(word) + ' 还原）';
+      box.insertBefore(note, box.firstChild);
+    }
+    if (!rec) {
+      var online = document.createElement('div');
+      online.style.cssText = 'text-align:center;margin-top:12px;';
+      online.innerHTML = '<a href="https://www.ldoceonline.com/dictionary/' + encodeURIComponent(word) + '" target="_blank" style="color:var(--accent2);">朗文在线查询 →</a>';
+      box.appendChild(online);
+    }
+  }).catch(function (err) {
+    box.innerHTML = '<div style="color:#c00;text-align:center;padding:20px;">查询失败: ' + esc(err.message) + '</div>';
+  });
+}
+
+// 弹窗内点击委托:单词 span / popup-link 跳转
+document.addEventListener('click', function (e) {
+  var link = e.target.closest('.popup-link');
+  if (link && link.dataset.word) { showWordPopup(link.dataset.word); return; }
+  var w = e.target.closest('.ex-word');
+  if (w && w.dataset.word) { showWordPopup(w.dataset.word); e.stopPropagation(); }
+});
+
+// ═══════════════════════════════════
+//  词典导入检查(首次打开)
+// ═══════════════════════════════════
+function checkDictImport() {
+  if (localStorage[DICT_FLAG]) return;
+  indexedDB.databases && indexedDB.databases().then(function (dbs) {
+    var exists = dbs.some(function (d) { return d.name === DICT_DB; });
+    if (exists) { localStorage[DICT_FLAG] = '1'; return; }
+    promptImport();
+  }).catch(promptImport);
+}
+
+function promptImport() {
+  var box = ensurePopup();
+  var inner = box.querySelector('#popupBox');
+  inner.innerHTML = '<div style="text-align:center;padding:20px;">'
+    + '<h3 style="margin:0 0 12px;">词典导入</h3>'
+    + '<p style="color:#666;font-size:14px;">首次使用需导入朗文词典(约 300-500MB),导入后离线可用。请确保 longman_dict.json 与本文件同目录。</p>'
+    + '<button id="startImport" style="padding:8px 20px;background:var(--accent2);border:none;border-radius:6px;cursor:pointer;">开始导入</button>'
+    + '<div id="importProg" style="margin-top:12px;color:#666;font-size:13px;"></div>'
+    + '</div>';
+  box.style.display = 'flex';
+  document.getElementById('startImport').onclick = function () {
+    this.disabled = true;
+    this.textContent = '导入中…';
+    importDict(function (done, total) {
+      document.getElementById('importProg').textContent = '已导入 ' + done + ' / ' + total + ' (' + Math.round(100*done/total) + '%)';
+    }).then(function (r) {
+      localStorage[DICT_FLAG] = '1';
+      document.getElementById('importProg').textContent = '导入完成!共 ' + r.total + ' 词';
+      setTimeout(closePopup, 1200);
+    }).catch(function (err) {
+      document.getElementById('importProg').innerHTML = '<span style="color:#c00;">导入失败: ' + esc(err.message) + '</span><br>请确认 longman_dict.json 在同目录,或通过本地 HTTP 打开本页(file:// 无法 fetch)。';
+    });
+  };
+}
+
+// ═══════════════════════════════════
 //  INIT
 // ═══════════════════════════════════
 loadSRS();
 WORDS.forEach(function (_, i) { initSRS(i); });
 saveSRS();
 renderList();
+checkDictImport();
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js').catch(function () {}); }
 </script>
 </body>
