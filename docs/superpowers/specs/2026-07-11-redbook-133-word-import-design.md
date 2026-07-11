@@ -41,14 +41,31 @@ Each new record uses the existing top-level contract:
 `thesaurus`, and `antonyms`.
 
 - `tag` is always `考研`.
-- Select at most two relevant parts of speech and at most three core senses per
-  headword. Resolve the source JSON's aggregate `pos` and `senses` fields
-  before creating the UI-facing `entries` structure.
+- Include every sense that can reasonably affect comprehension in a postgraduate
+  entrance-exam reading passage. There is no fixed limit on parts of speech or
+  senses. Resolve the source JSON's aggregate `pos` and `senses` fields before
+  creating the UI-facing `entries` structure.
+- Determine exam relevance conservatively from standard written-English usage,
+  Longman sense ordering and usage labels, and applicability to academic, social,
+  economic, scientific, technological, and cultural reading contexts. Do not
+  describe this judgment as measured past-paper frequency because the project
+  does not contain a tagged past-exam corpus.
+- Exclude a sense only when it is clearly archaic, dialectal, slang-only, or so
+  specialist that it would not normally appear in general postgraduate reading.
+  A less frequent sense remains included when misunderstanding it could change
+  the interpretation of a sentence.
 - Preserve accurate Longman English and Chinese definitions, but write fresh,
   exam-appropriate English examples with Chinese translations rather than
   copying source examples.
-- Supply three to five high-value collocations and concise Chinese glosses.
-  Source collocations are candidates only because coverage and field shape vary.
+- Include all exam-relevant phrasal verbs, preposition-governed patterns, fixed
+  frames, and lexical collocations, with concise Chinese glosses. Examples
+  include structures such as `drive somebody to do something`, `attribute A to
+  B`, `point out`, and `respect for`. Represent a structure as a phrase sense or
+  sub-phrase when it carries its own meaning; use `collocations` when it is a
+  combinational pattern rather than a separate sense.
+- Give every included sense or meaning-bearing phrase at least one original
+  bilingual example. Add a second example when grammar, register, or a
+  preposition pattern would otherwise remain ambiguous.
 - Use source word-family candidates selectively and add Chinese glosses. Avoid
   broad or misleading morphological relatives.
 - Add synonyms and antonyms only when the relation is unambiguous; use the
@@ -64,10 +81,14 @@ Each new record uses the existing top-level contract:
 2. Parse the current `WORDS` array and derive the 114-word missing set.
 3. Produce the new cards in a separate temporary JSON staging file. Validate
    its schema, word set, and JSON syntax before changing `index.html`.
-4. Append the validated staging records immediately before the `WORDS` array
+4. Maintain a temporary coverage ledger for polysemous words. Map every source
+   sense and relevant construction to either an included card entry or an
+   explicit exclusion reason (`archaic`, `dialectal`, `slang-only`, or
+   `specialist`). Review unresolved cases instead of silently truncating them.
+5. Append the validated staging records immediately before the `WORDS` array
    closing bracket, retaining the original 585 records byte-for-byte in their
    parsed representation.
-5. Remove the temporary staging artifact after the final merge.
+6. Remove the temporary staging and coverage artifacts after the final merge.
 
 ## Verification
 
@@ -78,8 +99,16 @@ Each new record uses the existing top-level contract:
   `index.html`; the 114 appended objects are in PDF order.
 - Every added card has all required top-level fields, nonempty `cn`, at least
   one entry and sense, and valid example objects where examples are present.
+- No card is rejected for exceeding an arbitrary sense count. Every source sense
+  for a reviewed polysemous word is either represented or has a documented,
+  allowed exclusion reason in the temporary coverage ledger.
+- Every included meaning-bearing phrase has a bilingual explanation and example;
+  every included preposition or collocation pattern has a Chinese gloss and is
+  attached to the correct sense.
 - Spot-check source fidelity and rendered detail pages for `drive`, `attention`,
-  `counsel`, `program`, `proximate`, `intercourse`, `loss`, and `lose`.
+  `counsel`, `program`, `prompt`, `respect`, `suit`, `profit`, `trigger`,
+  `exploit`, `resort`, `polish`, `lower`, `point`, `attack`, `interest`,
+  `proximate`, `intercourse`, `human`, `low`, `loss`, and `lose`.
 - Load the app through a local HTTP server, verify list search/detail rendering,
   start a review session, and confirm existing SRS progress remains addressable.
 
