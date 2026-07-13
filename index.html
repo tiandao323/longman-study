@@ -424,6 +424,180 @@ body {
 }
 .wf-item.revealed .wf-m { color:#92400e; }
 
+/* Detail page: Bubei-style visual override */
+#detailPage {
+  background:#fff; left:0; right:0; transform:none;
+}
+.det-topbar {
+  height:52px; padding-top:max(12px,var(--safe-t)); background:#fff; border-bottom:none;
+  flex-shrink:0; position:relative; display:flex; align-items:flex-start; justify-content:center;
+}
+.det-topbar .back-btn {
+  position:absolute; left:18px; top:max(10px,var(--safe-t)); width:36px; height:36px;
+  color:#2f2f2f; font-size:30px; line-height:1; background:transparent;
+}
+.det-topbar .back-btn:active { background:transparent; opacity:0.45; }
+.det-topbar .det-title {
+  width:68px; height:7px; margin-top:10px; border-radius:99px; background:#dedede;
+  color:transparent; overflow:hidden; font-size:0;
+}
+.det-topbar .det-space {
+  position:absolute; right:28px; top:max(14px,var(--safe-t)); width:auto;
+  font-size:16px; line-height:1; color:#8d8d8d; font-weight:500;
+}
+.det-topbar .det-space::before { content:'1'; }
+.det-body {
+  flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;
+  padding:0 26px 108px; background:#fff;
+}
+.det-wf-banner { display:none !important; }
+.det-hdr { position:relative; padding:48px 58px 0 0; }
+.det-hdr .det-word {
+  font-size:46px; font-weight:700; color:#ff7a00; letter-spacing:0;
+  line-height:1.08; word-break:break-word;
+}
+.det-hdr::after {
+  content:'☆'; position:absolute; right:4px; top:48px; width:44px; height:44px;
+  display:flex; align-items:center; justify-content:center;
+  color:#ff7a00; font-size:42px; font-weight:700; line-height:1;
+}
+.det-hdr .det-phonetic {
+  display:inline-flex; align-items:center; gap:10px; margin-top:18px;
+  font-size:23px; color:#777; font-weight:400; line-height:1.35;
+}
+.det-hdr .det-phonetic::before {
+  content:'英 )))'; font-size:14px; color:#5f5f5f; background:#e2e2e2;
+  border-radius:18px; padding:5px 10px; line-height:1; white-space:nowrap;
+}
+.det-cn {
+  padding:42px 0 44px; font-size:28px; color:#252525; line-height:1.5;
+  font-weight:500;
+}
+.det-tabs {
+  display:flex; justify-content:space-between; gap:24px; padding:0;
+  border-bottom:1px solid #eeeeee; overflow-x:auto;
+  -webkit-overflow-scrolling:touch; scrollbar-width:none; flex-shrink:0;
+  position:sticky; top:0; background:#fff; z-index:5;
+}
+.det-tab {
+  flex:0 0 auto; font-size:22px; padding:0 0 16px; cursor:pointer; color:#777;
+  border-bottom:4px solid transparent; margin-bottom:-2px; white-space:nowrap;
+  font-weight:500; border-radius:0; background:transparent;
+}
+.det-tab.active { color:#242424; border-bottom-color:#ff7a00; font-weight:600; }
+.det-content { padding:0; min-height:200px; }
+.det-close-float {
+  position:absolute; right:28px; bottom:calc(30px + var(--safe-b)); width:72px; height:72px;
+  border:none; border-radius:50%; background:#fff; color:#2a2a2a; font-size:48px;
+  line-height:1; box-shadow:0 14px 30px rgba(0,0,0,0.15); cursor:pointer;
+  display:flex; align-items:center; justify-content:center; z-index:8; font-weight:300;
+}
+.det-close-float:active { opacity:0.7; }
+.det-empty { padding:28px 0; color:#aaa; font-size:18px; line-height:1.6; }
+.entry-block { margin:0; border-bottom:1px solid #eeeeee; }
+.entry-block:last-child { border-bottom:none; }
+.entry-head {
+  font-size:18px; font-weight:500; color:#999; padding:24px 0 8px;
+  display:flex; align-items:center; gap:8px; margin-bottom:0; background:#fff; box-shadow:none;
+}
+.entry-head .eh-pos { color:#999; font-size:18px; font-weight:500; }
+.entry-head .eh-freq { color:#b2b2b2; font-size:16px; opacity:1; }
+.sense-line {
+  padding:16px 0; border-bottom:1px solid #eeeeee;
+  line-height:1.8; font-size:20px; color:#252525; background:#fff;
+}
+.sense-line.revealed .sl-cn { color:#777; }
+.sense-line .sl-num { font-weight:500; color:#ff7a00; font-size:18px; }
+.sense-line .sl-gram {
+  color:#777; font-style:normal; font-size:16px; font-weight:400;
+  background:#f0f0f0; padding:2px 8px; border-radius:12px;
+}
+.sense-line .sl-refhwd { font-weight:600; color:#252525; }
+.sense-line .sl-en { color:#252525; }
+.sense-line .sl-cn {
+  color:#777; font-weight:400; display:block; margin-top:4px;
+}
+.sense-line .sl-syn {
+  display:inline-block; background:#fff2e8; color:#f57c00;
+  font-size:14px; font-weight:500; padding:2px 8px; border-radius:12px;
+  border:none;
+}
+.sense-line .sl-register { font-size:15px; color:#999; font-style:italic; font-weight:400; }
+.sense-line .sl-variant { font-weight:500; color:#555; }
+.sub-phrase {
+  margin-left:0; padding:18px 0; border-left:none; line-height:1.7; font-size:20px;
+  background:#fff; border-bottom:1px solid #eeeeee;
+}
+.sub-phrase .sp-phrase { font-weight:500; color:#252525; }
+.sub-phrase .sp-gloss { font-size:16px; color:#999; font-style:italic; }
+.sub-phrase .sp-cn { color:#777; font-weight:400; display:block; }
+.sub-phrase.revealed .sp-cn { color:#777; }
+.pv-block { margin:0; border:none; border-radius:0; overflow:hidden; border-bottom:1px solid #eeeeee; }
+.pv-block .pv-head { padding:18px 0; background:#fff; font-size:20px; color:#252525; line-height:1.8; }
+.pv-block .pv-head .pv-num { font-weight:500; color:#ff7a00; font-size:18px; }
+.pv-block .pv-head .pv-name { font-weight:600; color:#252525; }
+.pv-block .pv-head .pv-tag { font-size:14px; color:#999; font-weight:400; font-style:italic; }
+.pv-block .pv-head .pv-reg { font-size:14px; color:#999; font-style:italic; }
+.pv-sub {
+  padding:16px 0; border-top:1px solid #eeeeee; line-height:1.7; font-size:19px; background:#fff;
+}
+.pv-sub .ps-letter { font-weight:500; color:#ff7a00; font-size:18px; }
+.pv-sub .ps-variant { font-weight:500; color:#555; }
+.pv-sub .ps-cn { color:#777; display:block; }
+.pv-sub.revealed .ps-cn { color:#777; }
+.pv-sub .ps-grammar { color:#555; font-weight:500; }
+.ex-placeholder {
+  font-size:15px; color:#aaa; font-style:italic; margin-top:6px;
+  background:#fff; padding:0; border-radius:0;
+}
+.ex-item {
+  margin:0; padding:28px 0; background:#fff; border-radius:0;
+  border-left:none; border-bottom:1px solid #eeeeee; position:relative;
+}
+.ex-item:last-child { border-bottom:none; }
+.ex-item .ex-en {
+  font-size:24px; color:#2a2a2a; line-height:1.32; padding-right:54px; font-weight:400;
+}
+.ex-word { border-bottom:none; font-weight:400; }
+.ex-keyword { font-weight:700; }
+.ex-word:hover { background:#fff2e8; }
+.ex-cn-btn {
+  position:absolute; right:0; top:50%; transform:translateY(-50%);
+  width:38px; height:38px; padding:0; overflow:hidden; text-indent:-999px;
+  color:#777; background:#f7f7f7; border:none; border-radius:50%;
+}
+.ex-cn-btn::after {
+  content:'⌕'; position:absolute; inset:0; text-indent:0; display:flex;
+  align-items:center; justify-content:center; font-size:24px; color:#777;
+}
+.ex-cn-btn:hover { color:#777; border-color:transparent; }
+.ex-item .ex-cn {
+  font-size:21px; color:#777; margin-top:14px; line-height:1.45; display:block;
+}
+.ex-src { margin-top:16px; color:#aaa; font-size:18px; line-height:1.35; }
+.col-list { list-style:none; }
+.col-item { padding:22px 0; border-bottom:1px solid #eeeeee; display:flex; align-items:baseline; justify-content:space-between; }
+.col-item .col-phrase { font-size:24px; font-weight:400; color:#252525; }
+.col-item .col-ref { font-size:15px; color:#999; font-weight:400; }
+.col-item .col-cn { font-size:20px; color:#777; margin-top:8px; display:block; }
+.col-item.revealed .col-cn { color:#777; }
+.thes-box {
+  padding:22px 0; border-radius:0; margin-bottom:0; border-bottom:1px solid #eeeeee;
+  background:#fff; color:#333; font-size:20px; line-height:1.8;
+}
+.wf-group { margin-bottom:0; padding:22px 0; border-bottom:1px solid #eeeeee; }
+.wf-group .wf-pos {
+  font-size:18px; font-weight:500; color:#999; padding-bottom:0; margin-bottom:12px; border-bottom:none;
+}
+.wf-group .wf-row { display:flex; flex-wrap:wrap; gap:10px; }
+.wf-item {
+  background:#f7f7f7; color:#333; padding:8px 12px; border-radius:8px; font-size:17px;
+  border:none;
+}
+.wf-item .wf-w { font-weight:500; }
+.wf-item .wf-m { font-size:14px; color:#888; display:block; margin-top:2px; }
+.wf-item.revealed .wf-m { color:#888; }
+
 /* ═══════════ STUDY PAGE ═══════════ */
 #studyPage {
   display:none; position:fixed; inset:0; background:#fff; z-index:100;
@@ -102342,6 +102516,187 @@ function switchTab(idx, el) {
   }
 
   c.innerHTML = html;
+}
+
+function ensureDetailCloseButton() {
+  if (document.querySelector('.det-close-float')) return;
+  const btn = document.createElement('button');
+  btn.className = 'det-close-float';
+  btn.type = 'button';
+  btn.setAttribute('aria-label', '关闭详情');
+  btn.textContent = '×';
+  btn.onclick = closeDetail;
+  document.getElementById('detailPage').appendChild(btn);
+}
+
+function getPrimaryMeaning(w) {
+  const lines = getMeaningLines(w);
+  return lines.length ? lines.join('；') : (w.cn || '');
+}
+
+function collectExamples(w) {
+  const examples = [];
+  function add(ex) {
+    if (!ex || !ex.en) return;
+    examples.push({ en: ex.en, cn: ex.cn || '', src: ex.src || ex.source || '' });
+  }
+  if (w.entries) w.entries.forEach(function (entry) {
+    (entry.senses || []).forEach(function (s) {
+      (s.examples || []).forEach(add);
+      (s.subPhrases || []).forEach(function (sp) { (sp.examples || []).forEach(add); });
+      (s.pvSubs || []).forEach(function (ps) { (ps.examples || []).forEach(add); });
+    });
+  });
+  return examples;
+}
+
+function renderBubeiExamples(w) {
+  const examples = collectExamples(w);
+  if (!examples.length) return '<div class="det-empty">暂无例句数据</div>';
+  return examples.slice(0, 20).map(function (ex) {
+    let html = '<div class="ex-item">';
+    html += renderDetailExampleEn(ex.en, w.word);
+    html += '<div class="ex-cn">' + esc(ex.cn) + '</div>';
+    html += '<div class="ex-src">' + esc(ex.src || '来自 Longman') + '</div>';
+    html += '<button class="ex-cn-btn" type="button" onclick="event.stopPropagation()">发音</button>';
+    html += '</div>';
+    return html;
+  }).join('');
+}
+
+function renderDetailExampleEn(en, word) {
+  const base = String(word || '').toLowerCase().replace(/[^a-z'-]/g, '');
+  const tokens = String(en || '').split(/(\s+)/);
+  let html = '<div class="ex-en">';
+  tokens.forEach(function (tok) {
+    if (/^\s+$/.test(tok)) { html += esc(tok); return; }
+    const clean = tok.toLowerCase().replace(/[^a-z'-]/g, '');
+    const hit = clean === base || clean === base + 's' || clean === base + 'es';
+    if (hit) html += '<span class="ex-word ex-keyword" data-word="' + esc(clean) + '">' + esc(tok) + '</span>';
+    else html += esc(tok);
+  });
+  html += '</div>';
+  return html;
+}
+
+function renderBubeiUsage(w) {
+  let html = '';
+  if (w.collocations && w.collocations.length) {
+    html += '<ul class="col-list">';
+    w.collocations.slice(0, 8).forEach(function (col) {
+      html += '<li class="col-item">';
+      html += '<div><span class="col-phrase">' + esc(col.phrase) + '</span>';
+      if (col.crossRef) html += ' <span class="col-ref">at ' + esc(col.crossRef) + '</span>';
+      if (col.cn) html += '<span class="col-cn">' + esc(col.cn) + '</span>';
+      html += '</div></li>';
+    });
+    html += '</ul>';
+  }
+  return html || '<div class="det-empty">暂无柯林斯/搭配数据</div>';
+}
+
+function renderBubeiDefinitions(w) {
+  let html = '';
+  if (w.entries) w.entries.forEach(function (entry) {
+    html += '<div class="entry-block">';
+    html += '<div class="entry-head">';
+    html += '<span>' + esc(w.word + (entry.homNum || '')) + '</span>';
+    if (entry.freq) html += '<span class="eh-freq">' + esc(entry.freq) + '</span>';
+    if (entry.pos) html += '<span class="eh-pos">' + esc(entry.pos) + '</span>';
+    html += '</div>';
+    (entry.senses || []).forEach(function (s) {
+      if (s.type === 'phrasal') {
+        html += '<div class="pv-block"><div class="pv-head">';
+        if (s.num) html += '<span class="pv-num">' + esc(s.num) + '.</span> ';
+        if (s.pvName) html += '<span class="pv-name">' + esc(s.pvName) + '</span> ';
+        html += '<span class="pv-tag">phrasal verb</span></div>';
+        (s.pvSubs || []).forEach(function (ps) {
+          html += '<div class="pv-sub">';
+          if (ps.letter) html += '<span class="ps-letter">' + esc(ps.letter) + ')</span> ';
+          html += esc(ps.enDef || '');
+          if (ps.cnDef) html += '<span class="ps-cn">' + esc(ps.cnDef) + '</span>';
+          html += '</div>';
+        });
+        if (!s.pvSubs || !s.pvSubs.length) {
+          html += '<div class="pv-sub">' + esc(s.enDef || '');
+          if (s.cnDef) html += '<span class="ps-cn">' + esc(s.cnDef) + '</span>';
+          html += '</div>';
+        }
+        html += '</div>';
+      } else {
+        html += '<div class="sense-line revealed">';
+        if (s.num) html += '<span class="sl-num">' + esc(s.num) + '.</span> ';
+        if (s.gram) html += '<span class="sl-gram">' + esc(s.gram) + '</span> ';
+        if (s.type === 'phrase' && s.refhwd) html += '<span class="sl-refhwd">' + esc(s.refhwd) + '</span> ';
+        html += '<span class="sl-en">' + esc(s.enDef || '') + '</span>';
+        if (s.cnDef) html += '<span class="sl-cn">' + esc(s.cnDef) + '</span>';
+        html += '</div>';
+      }
+    });
+    html += '</div>';
+  });
+  return html || '<div class="det-empty">暂无释义数据</div>';
+}
+
+function renderBubeiFamily(w) {
+  if (!w.wordFamily) return '<div class="det-empty">暂无派生数据</div>';
+  const posNames = { adjective:'形容词', noun:'名词', adverb:'副词', verb:'动词' };
+  let html = '';
+  Object.keys(w.wordFamily).forEach(function (pos) {
+    if (!w.wordFamily[pos] || !w.wordFamily[pos].length) return;
+    html += '<div class="wf-group"><div class="wf-pos">' + esc(posNames[pos] || pos) + '</div><div class="wf-row">';
+    w.wordFamily[pos].forEach(function (wf) {
+      html += '<div class="wf-item"><span class="wf-w">' + esc(wf.w) + '</span>';
+      if (wf.m) html += '<span class="wf-m">' + esc(wf.m) + '</span>';
+      html += '</div>';
+    });
+    html += '</div></div>';
+  });
+  return html || '<div class="det-empty">暂无派生数据</div>';
+}
+
+function renderBubeiThesaurus(w) {
+  let html = '';
+  if (w.thesaurus && w.thesaurus.length) {
+    html += '<div class="thes-box">' + w.thesaurus.map(function (t) {
+      return '<b>' + esc(t.w) + '</b>　' + esc(t.m || '');
+    }).join('<br>') + '</div>';
+  }
+  if (w.antonyms) html += '<div class="thes-box"><b>反义</b><br>' + esc(w.antonyms) + '</div>';
+  return html || '<div class="det-empty">暂无近义词数据</div>';
+}
+
+function openDetail(i) {
+  currentDetIdx = i;
+  const w = WORDS[i];
+  ensureDetailCloseButton();
+  document.getElementById('detWord').textContent = w.word;
+  document.getElementById('detPhonetic').textContent = formatPhonetic(w.phonetic || '');
+  document.getElementById('detCn').textContent = getPrimaryMeaning(w);
+  document.getElementById('detWfBanner').style.display = 'none';
+  const tabs = ['柯林斯', '例句', '派生', '词根', '近义', '真题'];
+  document.getElementById('detTabs').innerHTML = tabs.map(function (label, idx) {
+    return '<span class="det-tab' + (idx === 1 ? ' active' : '') + '" onclick="switchTab(' + idx + ',this)">' + label + '</span>';
+  }).join('');
+  switchTab(1);
+  document.getElementById('detailPage').classList.add('open');
+  document.querySelector('.det-body').scrollTop = 0;
+}
+
+function switchTab(idx, el) {
+  if (el) {
+    document.querySelectorAll('.det-tab').forEach(function (t) { t.classList.remove('active'); });
+    el.classList.add('active');
+  }
+  const w = WORDS[currentDetIdx];
+  if (!w) return;
+  const c = document.getElementById('detContent');
+  if (idx === 0) c.innerHTML = renderBubeiUsage(w);
+  else if (idx === 1) c.innerHTML = renderBubeiExamples(w);
+  else if (idx === 2) c.innerHTML = renderBubeiFamily(w);
+  else if (idx === 3) c.innerHTML = renderBubeiDefinitions(w);
+  else if (idx === 4) c.innerHTML = renderBubeiThesaurus(w);
+  else c.innerHTML = '<div class="det-empty">暂无真题数据</div>';
 }
 
 // ═══════════════════════════════════
