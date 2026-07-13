@@ -62,6 +62,23 @@ body {
 .top-actions { display:flex; align-items:center; gap:8px; margin-left:auto; }
 .top-icon:active { opacity:0.45; }
 .top-icon.small { font-size:24px; }
+.top-icon.eye-open { font-size:25px; }
+.top-icon.eye-closed { font-size:26px; color:#555; }
+.eye-glyph {
+  width:30px; height:20px; border:3px solid #202124; border-radius:50%;
+  position:relative; display:inline-block;
+}
+.eye-glyph::after {
+  content:''; width:9px; height:9px; border-radius:50%; background:#202124;
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+}
+.eye-glyph.closed {
+  height:17px; border:none; border-bottom:3px solid #202124; border-radius:0 0 50% 50%;
+}
+.eye-glyph.closed::after {
+  width:4px; height:4px; top:13px; background:#202124;
+  box-shadow:-9px -3px 0 #202124, 9px -3px 0 #202124;
+}
 
 .list-tools {
   padding:12px 28px 16px; border-bottom:1px solid #f0f0f0; flex-shrink:0;
@@ -101,17 +118,29 @@ body {
   padding:24px 28px 6px; font-size:18px; color:#9a9a9a; font-weight:700;
 }
 .word-item {
-  margin-left:28px; padding:20px 28px 20px 0; cursor:pointer; user-select:none;
+  margin-left:28px; padding:18px 28px 18px 0; cursor:pointer; user-select:none;
   border-bottom:1px solid #f0f0f0; display:flex; align-items:center;
 }
 .word-item:active { background:#F8F8F8; }
 .word-item .wi-left { flex:1; }
-.word-item .wi-en { font-size:27px; font-weight:800; color:#202124; letter-spacing:0; }
-.word-item .wi-cn {
-  font-size:14px; max-height:0; overflow:hidden; color:transparent; margin-top:0;
-  line-height:1.6; opacity:0; transition:max-height 0.25s ease, opacity 0.2s ease, margin 0.2s ease;
+.word-item .wi-head { display:flex; align-items:baseline; gap:12px; min-width:0; }
+.word-item .wi-en {
+  font-size:24px; font-weight:700; color:#222; letter-spacing:0;
+  line-height:1.25; white-space:nowrap;
 }
-.word-item.revealed .wi-cn { max-height:200px; color:var(--text2); margin-top:5px; opacity:1; }
+.word-item .wi-phonetic {
+  display:none; font-size:20px; font-weight:400; color:#8c8c8c; line-height:1.25;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.word-item .wi-cn {
+  display:none; font-size:21px; color:#2b2b2b; margin-top:12px;
+  line-height:1.55; font-weight:400;
+}
+.word-item .wi-cn-line { margin-top:3px; }
+.meanings-visible .word-item { align-items:flex-start; padding-top:18px; padding-bottom:18px; }
+.meanings-visible .word-item .wi-phonetic,
+.meanings-visible .word-item .wi-cn { display:block; }
+.meanings-visible .word-item .wi-badge { display:none; }
 .word-item .wi-badge {
   font-size:12px; padding:3px 10px; border-radius:8px; font-weight:500;
   flex-shrink:0; margin-left:8px; white-space:nowrap;
@@ -120,7 +149,6 @@ body {
 .wi-badge.learning { background:#fff3e0; color:#e65100; }
 .wi-badge.review { background:#e8f5e9; color:#2e7d32; }
 .wi-badge.mastered { background:#f3e5f5; color:#6a1b9a; }
-.badges-hidden .wi-badge { display:none; }
 
 .floating-study {
   position:absolute; left:50%; bottom:calc(18px + var(--safe-b)); transform:translateX(-50%);
@@ -472,7 +500,7 @@ body {
     <span class="title">red book</span>
     <div class="top-actions">
       <button class="top-icon small" type="button" onclick="openSearch()" aria-label="搜索">⌕</button>
-      <button class="top-icon small" type="button" onclick="toggleBadges()" aria-label="显示状态">◉</button>
+      <button class="top-icon small eye-open" id="meaningToggleBtn" type="button" onclick="toggleMeanings()" aria-label="显示释义"><span class="eye-glyph" id="meaningToggleIcon"></span></button>
       <button class="top-icon small" type="button" onclick="startStudy()" aria-label="开始学习">•••</button>
     </div>
   </div>
@@ -101875,7 +101903,7 @@ let selectedImportFilters = [];
 let draftImportFilters = [];
 let sortMode = 'default';
 let searchQuery = '';
-let badgesVisible = true;
+let meaningsVisible = false;
 const IMPORT_BATCHES = [
   { id: 'base', label: '旧词', dateLabel: '旧词', year: '历史', start: 0, end: 584 },
   { id: '2026-07-11', label: '7月11日', dateLabel: '7月11日', year: '2026年', start: 585, end: 698 },
@@ -101969,9 +101997,14 @@ function getFilteredIndices() {
 function formatListCount(count) {
   return count + '词';
 }
-function toggleBadges() {
-  badgesVisible = !badgesVisible;
-  document.getElementById('listPage').classList.toggle('badges-hidden', !badgesVisible);
+function toggleMeanings() {
+  meaningsVisible = !meaningsVisible;
+  document.getElementById('listPage').classList.toggle('meanings-visible', meaningsVisible);
+  const btn = document.getElementById('meaningToggleBtn');
+  document.getElementById('meaningToggleIcon').classList.toggle('closed', meaningsVisible);
+  btn.classList.toggle('eye-open', !meaningsVisible);
+  btn.classList.toggle('eye-closed', meaningsVisible);
+  btn.setAttribute('aria-label', meaningsVisible ? '隐藏释义' : '显示释义');
 }
 function openDateFilter() {
   draftImportFilters = selectedImportFilters.slice();
@@ -102037,6 +102070,33 @@ function openSearch() {
   }
   renderList();
 }
+function formatPhonetic(p) {
+  return String(p || '').replace(/\s+/g, ' ').trim();
+}
+function posAbbr(pos) {
+  const p = String(pos || '').toLowerCase();
+  if (p.indexOf('noun') >= 0) return 'n.';
+  if (p.indexOf('verb') >= 0) return 'v.';
+  if (p.indexOf('adjective') >= 0) return 'adj.';
+  if (p.indexOf('adverb') >= 0) return 'adv.';
+  if (p.indexOf('preposition') >= 0) return 'prep.';
+  if (p.indexOf('pronoun') >= 0) return 'pron.';
+  if (p.indexOf('conjunction') >= 0) return 'conj.';
+  return pos ? esc(pos) + '.' : '';
+}
+function getMeaningLines(w) {
+  const lines = [];
+  (w.entries || []).forEach(function (entry) {
+    const pos = posAbbr(entry.pos);
+    const defs = [];
+    (entry.senses || []).forEach(function (sense) {
+      if (sense.cnDef && defs.length < 3) defs.push(sense.cnDef);
+    });
+    if (defs.length) lines.push((pos ? pos + ' ' : '') + defs.join('；'));
+  });
+  if (!lines.length && w.cn) lines.push(w.cn);
+  return lines.slice(0, 2);
+}
 
 function renderList() {
   searchQuery = document.getElementById('searchInput').value.trim().toLowerCase();
@@ -102055,9 +102115,16 @@ function renderList() {
     }
     const st = getStatus(i);
     const [label, cls] = getStatusLabel(st);
+    const meanings = getMeaningLines(w).map(function (line) {
+      return '<div class="wi-cn-line">' + esc(line) + '</div>';
+    }).join('');
     html += '<div class="word-item" onclick="openDetail(' + i + ')">' +
       '<div class="wi-left">' +
-      '<div class="wi-en">' + esc(w.word) + '</div>' +
+      '<div class="wi-head">' +
+      '<span class="wi-en">' + esc(w.word) + '</span>' +
+      '<span class="wi-phonetic">' + esc(formatPhonetic(w.phonetic)) + '</span>' +
+      '</div>' +
+      '<div class="wi-cn">' + meanings + '</div>' +
       '</div>' +
       '<span class="wi-badge ' + cls + '">' + label + '</span>' +
       '</div>';

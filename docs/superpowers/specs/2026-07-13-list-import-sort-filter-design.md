@@ -38,6 +38,8 @@ Home page:
 - A count summary such as `811词`.
 - An orange pill button `按导入时间`.
 - Search remains available from the top icon.
+- The eye icon toggles all list definitions: hidden by default, then word +
+  phonetic + Chinese meanings when enabled.
 - Alphabetical sort remains available through a compact top/right action.
 
 Date-filter page:
@@ -68,4 +70,6 @@ order and still opens details by the original `WORDS` index.
 - Import, search, and sort filters can combine.
 - Status filter chips are absent from the list page.
 - Date-filter rows correctly count old/imported/future-unfiled batches.
+- Eye toggle shows and hides phonetics and Chinese meanings without changing the
+  filtered word set.
 - `startStudy()` still uses `getDueWords()` and is not affected by list sort.
