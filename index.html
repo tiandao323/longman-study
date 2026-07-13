@@ -47,42 +47,42 @@ body {
 }
 .list-header {
   display:flex; align-items:center; justify-content:space-between;
-  padding:12px 16px; padding-top:max(12px,var(--safe-t));
-  border-bottom:none; background:var(--blue-header); flex-shrink:0; position:relative;
+  padding:22px 18px 14px; padding-top:max(22px,var(--safe-t));
+  border-bottom:none; background:#fff; flex-shrink:0; position:relative;
 }
 .list-header .title {
-  font-size:17px; font-weight:600; letter-spacing:0.3px; color:#fff;
-  display:flex; align-items:center; gap:8px;
+  position:absolute; left:50%; transform:translateX(-50%);
+  font-size:24px; font-weight:700; letter-spacing:0; color:#202124;
 }
-.list-header .title::before {
-  content:'📚'; font-size:20px;
+.top-icon {
+  width:42px; height:42px; border:none; background:transparent; color:#202124;
+  font-size:27px; line-height:1; display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-weight:700; font-family:inherit;
 }
-.list-header .study-btn {
-  font-size:13px; font-weight:600; color:var(--blue-header); background:#fff;
-  padding:7px 16px; border-radius:18px; cursor:pointer; border:none;
-  letter-spacing:0.3px;
-}
-.list-header .study-btn:active { opacity:0.85; }
+.top-actions { display:flex; align-items:center; gap:8px; margin-left:auto; }
+.top-icon:active { opacity:0.45; }
+.top-icon.small { font-size:24px; }
 
-.filter-row {
-  display:flex; padding:8px 16px; gap:6px; overflow-x:auto;
-  border-bottom:1px solid var(--divider);
-  -webkit-overflow-scrolling:touch; scrollbar-width:none; flex-shrink:0;
+.list-tools {
+  padding:12px 28px 16px; border-bottom:1px solid #f0f0f0; flex-shrink:0;
 }
-.filter-row::-webkit-scrollbar { display:none; }
-.filter-label {
-  flex-shrink:0; font-size:13px; color:var(--text3); font-weight:600;
-  display:flex; align-items:center; min-height:32px; padding:0 2px 0 0;
+.list-tool-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.list-count {
+  display:flex; align-items:center; gap:14px; font-size:26px; font-weight:800; color:#202124;
+  white-space:nowrap;
 }
-.filter-chip-group { display:flex; gap:6px; flex-shrink:0; }
-.chip {
-  flex-shrink:0; padding:6px 14px; font-size:14px; border-radius:16px;
-  cursor:pointer; color:var(--text2); white-space:nowrap;
-  min-height:32px; display:flex; align-items:center; border:1px solid var(--divider);
-  background:#fff;
+.list-count::before {
+  content:''; width:6px; height:22px; border-radius:4px; background:#aaa; display:inline-block;
 }
-.chip:active { background:rgba(0,0,0,0.04); }
-.chip.active { background:var(--accent2); color:#fff; font-weight:600; border-color:var(--accent2); }
+.tool-actions { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.date-filter-btn,
+.sort-filter-btn {
+  border:none; border-radius:22px; padding:9px 16px; font-size:16px; font-weight:700;
+  color:#e86f13; background:#fff2e8; cursor:pointer; white-space:nowrap; font-family:inherit;
+}
+.sort-filter-btn { padding:9px 12px; min-width:58px; }
+.date-filter-btn:active,
+.sort-filter-btn:active { opacity:0.65; }
 
 .search-bar {
   display:flex; align-items:center; padding:0 16px; max-height:0;
@@ -97,13 +97,16 @@ body {
 .search-bar input::placeholder { color:#bbb; }
 
 #wordList { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+.word-group-head {
+  padding:24px 28px 6px; font-size:18px; color:#9a9a9a; font-weight:700;
+}
 .word-item {
-  padding:16px 20px; cursor:pointer; user-select:none;
-  border-bottom:1px solid var(--divider); display:flex; align-items:center;
+  margin-left:28px; padding:20px 28px 20px 0; cursor:pointer; user-select:none;
+  border-bottom:1px solid #f0f0f0; display:flex; align-items:center;
 }
 .word-item:active { background:#F8F8F8; }
 .word-item .wi-left { flex:1; }
-.word-item .wi-en { font-size:20px; font-weight:600; color:var(--text); }
+.word-item .wi-en { font-size:27px; font-weight:800; color:#202124; letter-spacing:0; }
 .word-item .wi-cn {
   font-size:14px; max-height:0; overflow:hidden; color:transparent; margin-top:0;
   line-height:1.6; opacity:0; transition:max-height 0.25s ease, opacity 0.2s ease, margin 0.2s ease;
@@ -117,6 +120,66 @@ body {
 .wi-badge.learning { background:#fff3e0; color:#e65100; }
 .wi-badge.review { background:#e8f5e9; color:#2e7d32; }
 .wi-badge.mastered { background:#f3e5f5; color:#6a1b9a; }
+.badges-hidden .wi-badge { display:none; }
+
+.floating-study {
+  position:absolute; left:50%; bottom:calc(18px + var(--safe-b)); transform:translateX(-50%);
+  border:none; border-radius:28px; background:#fff; color:#f57c00; font-size:16px; font-weight:800;
+  padding:13px 24px; box-shadow:0 8px 28px rgba(0,0,0,0.16); cursor:pointer; font-family:inherit;
+}
+.floating-study:active { opacity:0.75; }
+
+/* ═══════════ IMPORT DATE FILTER PAGE ═══════════ */
+#dateFilterPage {
+  display:none; position:fixed; inset:0; background:#fff; z-index:95;
+  flex-direction:column; width:100%; max-width:var(--max-w);
+  margin:0 auto; left:50%; transform:translateX(-50%); overflow:hidden;
+}
+#dateFilterPage.open { display:flex; }
+.date-filter-top {
+  display:flex; align-items:center; justify-content:center; position:relative;
+  padding:24px 18px 18px; padding-top:max(24px,var(--safe-t)); background:#fff; flex-shrink:0;
+}
+.date-filter-top .back-btn {
+  position:absolute; left:18px; width:42px; height:42px; border:none; background:transparent;
+  color:#202124; font-size:42px; line-height:1; cursor:pointer; font-family:inherit;
+}
+.date-filter-title { font-size:24px; font-weight:800; color:#202124; }
+.date-filter-summary {
+  padding:20px 28px 24px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
+}
+.date-selected-count {
+  display:flex; align-items:center; gap:14px; font-size:26px; font-weight:800; color:#202124;
+}
+.date-selected-count::before {
+  content:''; width:6px; height:22px; border-radius:4px; background:#aaa; display:inline-block;
+}
+.select-all-btn {
+  border:none; background:transparent; color:#e86f13; font-size:20px; font-weight:800;
+  cursor:pointer; font-family:inherit;
+}
+.date-filter-list { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:0 0 84px; }
+.date-year { padding:8px 64px 18px; font-size:20px; color:#a0a0a0; font-weight:700; }
+.date-row {
+  display:flex; align-items:center; gap:28px; min-height:78px; margin-left:28px; padding-right:28px;
+  border-bottom:1px solid #f0f0f0; cursor:pointer; user-select:none;
+}
+.date-check {
+  width:36px; height:36px; border:3px solid #aaa; border-radius:12px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; color:#fff; font-size:22px; font-weight:800;
+}
+.date-row.selected .date-check { border-color:#f57c00; background:#f57c00; }
+.date-row.selected .date-check::before { content:'✓'; }
+.date-row-text { font-size:26px; font-weight:800; color:#202124; }
+.date-confirm {
+  position:absolute; left:0; right:0; bottom:0; padding:14px 24px calc(14px + var(--safe-b));
+  border-top:1px solid #f2f2f2; background:rgba(255,255,255,0.94); backdrop-filter:blur(10px);
+}
+.date-confirm button {
+  width:100%; border:none; background:transparent; color:#d0d0d0; font-size:22px; font-weight:800;
+  padding:10px 0; font-family:inherit; cursor:pointer;
+}
+.date-confirm button.enabled { color:#f57c00; }
 
 /* ═══════════ DETAIL PAGE ═══════════ */
 #detailPage {
@@ -405,22 +468,44 @@ body {
 <!-- ═══════════ LIST PAGE ═══════════ -->
 <div id="listPage">
   <div class="list-header">
-    <span class="title">LONGMAN <span style="font-size:14px;opacity:0.9;font-weight:500;">朗文 5++</span></span>
-    <button class="study-btn" onclick="startStudy()">🎯 开始学习</button>
+    <button class="top-icon" type="button" aria-label="返回">‹</button>
+    <span class="title">red book</span>
+    <div class="top-actions">
+      <button class="top-icon small" type="button" onclick="openSearch()" aria-label="搜索">⌕</button>
+      <button class="top-icon small" type="button" onclick="toggleBadges()" aria-label="显示状态">◉</button>
+      <button class="top-icon small" type="button" onclick="startStudy()" aria-label="开始学习">•••</button>
+    </div>
   </div>
-  <div class="filter-row">
-    <span class="filter-label">导入</span>
-    <span class="filter-chip-group" id="importFilterChips"></span>
-    <span class="filter-label">排序</span>
-    <span class="chip sort-chip active" onclick="setSortMode('default',this)">默认</span>
-    <span class="chip sort-chip" onclick="setSortMode('az',this)">A-Z</span>
-    <span class="chip sort-chip" onclick="setSortMode('za',this)">Z-A</span>
-    <span class="chip" onclick="openSearch()">🔍</span>
+  <div class="list-tools">
+    <div class="list-tool-row">
+      <div class="list-count" id="listCount">0词</div>
+      <div class="tool-actions">
+        <button class="date-filter-btn" type="button" onclick="openDateFilter()">按导入时间</button>
+        <button class="sort-filter-btn" id="sortModeBtn" type="button" onclick="cycleSortMode()">默认</button>
+      </div>
+    </div>
   </div>
   <div class="search-bar" id="searchBar">
     <input type="text" placeholder="搜索单词..." id="searchInput" oninput="renderList()">
   </div>
   <div id="wordList"></div>
+  <button class="floating-study" type="button" onclick="startStudy()">开始学习</button>
+</div>
+
+<!-- ═══════════ IMPORT DATE FILTER PAGE ═══════════ -->
+<div id="dateFilterPage">
+  <div class="date-filter-top">
+    <button class="back-btn" type="button" onclick="closeDateFilter(false)">‹</button>
+    <span class="date-filter-title">按导入时间筛选</span>
+  </div>
+  <div class="date-filter-summary">
+    <div class="date-selected-count" id="dateSelectedCount">已选 0 词</div>
+    <button class="select-all-btn" type="button" onclick="toggleAllDateFilters()">全选</button>
+  </div>
+  <div class="date-filter-list" id="dateFilterList"></div>
+  <div class="date-confirm">
+    <button id="dateConfirmBtn" type="button" onclick="closeDateFilter(true)">确定</button>
+  </div>
 </div>
 
 <!-- ═══════════ DETAIL PAGE ═══════════ -->
@@ -101786,13 +101871,15 @@ function initSRS(i) {
   if (!srs[i]) srs[i] = { ease: 2.5, interval: 0, reps: 0, nextReview: 0 };
 }
 
-let importFilter = 'all';
+let selectedImportFilters = [];
+let draftImportFilters = [];
 let sortMode = 'default';
 let searchQuery = '';
+let badgesVisible = true;
 const IMPORT_BATCHES = [
-  { id: 'base', label: '旧词', start: 0, end: 584 },
-  { id: '2026-07-11', label: '7月11', start: 585, end: 698 },
-  { id: '2026-07-13', label: '7月13', start: 699, end: 810 }
+  { id: 'base', label: '旧词', dateLabel: '旧词', year: '历史', start: 0, end: 584 },
+  { id: '2026-07-11', label: '7月11日', dateLabel: '7月11日', year: '2026年', start: 585, end: 698 },
+  { id: '2026-07-13', label: '7月13日', dateLabel: '7月13日', year: '2026年', start: 699, end: 810 }
 ];
 
 function getStatus(i) {
@@ -101827,23 +101914,25 @@ function applyRating(i, r) {
 // ═══════════════════════════════════
 //  LIST PAGE
 // ═══════════════════════════════════
-function setImportFilter(f, el) {
-  importFilter = f;
-  document.querySelectorAll('.import-chip').forEach(function (c) { c.classList.remove('active'); });
-  if (el) el.classList.add('active');
-  renderList();
-}
 function setSortMode(mode, el) {
   sortMode = mode;
   document.querySelectorAll('.sort-chip').forEach(function (c) { c.classList.remove('active'); });
   if (el) el.classList.add('active');
   renderList();
 }
+function cycleSortMode() {
+  const modes = ['default', 'az', 'za'];
+  const next = modes[(modes.indexOf(sortMode) + 1) % modes.length];
+  sortMode = next;
+  const label = { default: '默认', az: 'A-Z', za: 'Z-A' }[sortMode];
+  document.getElementById('sortModeBtn').textContent = label;
+  renderList();
+}
 function getImportBatches() {
   const batches = IMPORT_BATCHES.slice();
   const lastKnownEnd = batches.length ? batches[batches.length - 1].end : -1;
   if (WORDS.length - 1 > lastKnownEnd) {
-    batches.push({ id: 'unfiled', label: '新增', start: lastKnownEnd + 1, end: WORDS.length - 1 });
+    batches.push({ id: 'unfiled', label: '新增', dateLabel: '新增', year: '未归档', start: lastKnownEnd + 1, end: WORDS.length - 1 });
   }
   return batches;
 }
@@ -101854,17 +101943,88 @@ function getImportBatch(i) {
   }
   return 'unfiled';
 }
-function importChip(id, label, active) {
-  return '<span class="chip import-chip' + (active ? ' active' : '') +
-    '" onclick="setImportFilter(&quot;' + esc(id) + '&quot;,this)">' + esc(label) + '</span>';
+function getBatchCount(batch) {
+  return Math.max(0, Math.min(WORDS.length - 1, batch.end) - batch.start + 1);
 }
-function renderImportFilterChips() {
-  const cont = document.getElementById('importFilterChips');
-  let html = importChip('all', '全部批次', true);
-  getImportBatches().forEach(function (batch) {
-    html += importChip(batch.id, batch.label, false);
+function getSelectedFilterSet() {
+  return new Set(selectedImportFilters);
+}
+function getFilteredIndices() {
+  const selected = getSelectedFilterSet();
+  const useImportFilter = selected.size > 0;
+  const indices = [];
+  WORDS.forEach(function (w, i) {
+    if (useImportFilter && !selected.has(getImportBatch(i))) return;
+    if (searchQuery && w.word.toLowerCase().indexOf(searchQuery) === -1) return;
+    indices.push(i);
   });
-  cont.innerHTML = html;
+  if (sortMode !== 'default') {
+    indices.sort(function (a, b) {
+      const r = WORDS[a].word.localeCompare(WORDS[b].word, 'en', { sensitivity: 'base' });
+      return sortMode === 'az' ? r : -r;
+    });
+  }
+  return indices;
+}
+function formatListCount(count) {
+  return count + '词';
+}
+function toggleBadges() {
+  badgesVisible = !badgesVisible;
+  document.getElementById('listPage').classList.toggle('badges-hidden', !badgesVisible);
+}
+function openDateFilter() {
+  draftImportFilters = selectedImportFilters.slice();
+  renderDateFilterPage();
+  document.getElementById('dateFilterPage').classList.add('open');
+}
+function closeDateFilter(apply) {
+  if (apply && draftImportFilters.length === 0) return;
+  if (apply) {
+    selectedImportFilters = draftImportFilters.slice();
+    renderList();
+  }
+  document.getElementById('dateFilterPage').classList.remove('open');
+}
+function toggleDateFilter(id) {
+  const idx = draftImportFilters.indexOf(id);
+  if (idx >= 0) draftImportFilters.splice(idx, 1);
+  else draftImportFilters.push(id);
+  renderDateFilterPage();
+}
+function toggleAllDateFilters() {
+  const batches = getImportBatches();
+  if (draftImportFilters.length === batches.length) draftImportFilters = [];
+  else draftImportFilters = batches.map(function (batch) { return batch.id; });
+  renderDateFilterPage();
+}
+function renderDateFilterPage() {
+  const batches = getImportBatches();
+  const selected = new Set(draftImportFilters);
+  let selectedCount = 0;
+  batches.forEach(function (batch) {
+    if (selected.has(batch.id)) selectedCount += getBatchCount(batch);
+  });
+  document.getElementById('dateSelectedCount').textContent = '已选 ' + selectedCount + ' 词';
+  document.querySelector('.select-all-btn').textContent = selected.size === batches.length ? '取消全选' : '全选';
+  const btn = document.getElementById('dateConfirmBtn');
+  btn.classList.toggle('enabled', selected.size > 0);
+  btn.disabled = selected.size === 0;
+
+  let html = '';
+  let year = '';
+  batches.forEach(function (batch) {
+    if (batch.year !== year) {
+      year = batch.year;
+      html += '<div class="date-year">' + esc(year) + '</div>';
+    }
+    const checked = selected.has(batch.id);
+    html += '<div class="date-row' + (checked ? ' selected' : '') + '" onclick="toggleDateFilter(&quot;' + esc(batch.id) + '&quot;)">' +
+      '<span class="date-check"></span>' +
+      '<span class="date-row-text">' + esc(batch.dateLabel || batch.label) + '　' + getBatchCount(batch) + '词</span>' +
+      '</div>';
+  });
+  document.getElementById('dateFilterList').innerHTML = html;
 }
 function openSearch() {
   const sb = document.getElementById('searchBar');
@@ -101882,20 +102042,17 @@ function renderList() {
   searchQuery = document.getElementById('searchInput').value.trim().toLowerCase();
   const cont = document.getElementById('wordList');
   let html = '';
-  const indices = [];
-  WORDS.forEach(function (w, i) {
-    if (importFilter !== 'all' && getImportBatch(i) !== importFilter) return;
-    if (searchQuery && w.word.toLowerCase().indexOf(searchQuery) === -1) return;
-    indices.push(i);
-  });
-  if (sortMode !== 'default') {
-    indices.sort(function (a, b) {
-      const r = WORDS[a].word.localeCompare(WORDS[b].word, 'en', { sensitivity: 'base' });
-      return sortMode === 'az' ? r : -r;
-    });
-  }
+  const indices = getFilteredIndices();
+  document.getElementById('listCount').textContent = formatListCount(indices.length);
+  let lastBatch = '';
   indices.forEach(function (i) {
     const w = WORDS[i];
+    const batchId = getImportBatch(i);
+    if (sortMode === 'default' && batchId !== lastBatch) {
+      const batch = getImportBatches().find(function (item) { return item.id === batchId; });
+      if (batch) html += '<div class="word-group-head">' + esc(batch.dateLabel || batch.label) + '　' + getBatchCount(batch) + '词</div>';
+      lastBatch = batchId;
+    }
     const st = getStatus(i);
     const [label, cls] = getStatusLabel(st);
     html += '<div class="word-item" onclick="openDetail(' + i + ')">' +
@@ -102567,7 +102724,6 @@ function promptImport() {
 loadSRS();
 WORDS.forEach(function (_, i) { initSRS(i); });
 saveSRS();
-renderImportFilterChips();
 renderList();
 checkDictImport();
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js').catch(function () {}); }
