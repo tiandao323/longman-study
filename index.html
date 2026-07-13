@@ -102962,17 +102962,29 @@ function checkDictImport() {
       return;
     }
     delete localStorage[DICT_FLAG];
-    promptImport();
-  }).catch(promptImport);
+  }).catch(function () {
+    delete localStorage[DICT_FLAG];
+  });
 }
 
 function promptImport() {
   var box = ensurePopup();
   var inner = box.querySelector('#popupBox');
+  var isFile = location.protocol === 'file:';
+  if (isFile) {
+    inner.innerHTML = '<div style="text-align:center;padding:20px;">'
+      + '<h3 style="margin:0 0 12px;">词典需要用本地服务打开</h3>'
+      + '<p style="color:#666;font-size:14px;line-height:1.7;">你现在是通过 file:// 打开的页面，浏览器不允许读取 longman_dict.json，所以不能导入词典。</p>'
+      + '<a href="http://127.0.0.1:8765/index.html" style="display:inline-block;margin-top:8px;padding:9px 18px;background:#1e88e5;color:#fff;border-radius:8px;text-decoration:none;">用本地服务打开</a>'
+      + '<div style="margin-top:12px;color:#999;font-size:13px;">打开后再点例句里的单词，就能导入/查询词典。</div>'
+      + '</div>';
+    box.style.display = 'flex';
+    return;
+  }
   inner.innerHTML = '<div style="text-align:center;padding:20px;">'
     + '<h3 style="margin:0 0 12px;">词典导入</h3>'
-    + '<p style="color:#666;font-size:14px;">首次使用需导入朗文词典(约 300-500MB),导入后离线可用。请确保 longman_dict.json 与本文件同目录。</p>'
-    + '<button id="startImport" style="padding:8px 20px;background:var(--accent2);border:none;border-radius:6px;cursor:pointer;">开始导入</button>'
+    + '<p style="color:#666;font-size:14px;line-height:1.7;">首次查词需要导入朗文词典，导入后可离线使用。请确认 longman_dict.json 与本文件在同一目录。</p>'
+    + '<button id="startImport" style="padding:8px 20px;background:var(--accent2);color:#fff;border:none;border-radius:6px;cursor:pointer;">开始导入</button>'
     + '<div id="importProg" style="margin-top:12px;color:#666;font-size:13px;"></div>'
     + '</div>';
   box.style.display = 'flex';
@@ -102986,7 +102998,7 @@ function promptImport() {
       document.getElementById('importProg').textContent = '导入完成!共 ' + r.total + ' 词';
       setTimeout(closePopup, 1200);
     }).catch(function (err) {
-      document.getElementById('importProg').innerHTML = '<span style="color:#c00;">导入失败: ' + esc(err.message) + '</span><br>请确认 longman_dict.json 在同目录,或通过本地 HTTP 打开本页(file:// 无法 fetch)。';
+      document.getElementById('importProg').innerHTML = '<span style="color:#c00;">导入失败：' + esc(err.message) + '</span><br>请确认 longman_dict.json 在同目录，并通过本地 HTTP 打开本页。';
     });
   };
 }
