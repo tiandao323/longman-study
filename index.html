@@ -102669,6 +102669,18 @@ function dictGet(word) {
 }
 
 // 词形还原:生成可能的词原形候选(复数/现在分词/过去式/过去分词/比较级/最高级)
+function dictCount() {
+  return openDictDB().then(function (db) {
+    return new Promise(function (resolve, reject) {
+      var tx = db.transaction(DICT_STORE, 'readonly');
+      var st = tx.objectStore(DICT_STORE);
+      var req = st.count();
+      req.onsuccess = function () { resolve(req.result || 0); };
+      req.onerror = function () { reject(req.error); };
+    });
+  });
+}
+
 function lemmatize(word) {
   var w = word.toLowerCase();
   var cands = [];
@@ -102896,6 +102908,24 @@ function showWordPopup(word) {
   p.style.display = 'flex';
   dictLookup(word).then(function (hit) {
     var rec = hit ? hit.rec : null;
+    if (!rec) {
+      dictCount().then(function (count) {
+        if (!count) {
+          delete localStorage[DICT_FLAG];
+          promptImport();
+          return;
+        }
+        box.innerHTML = renderPopupContent(null);
+        var online = document.createElement('div');
+        online.style.cssText = 'text-align:center;margin-top:12px;';
+        online.innerHTML = '<a href="https://www.ldoceonline.com/dictionary/' + encodeURIComponent(word) + '" target="_blank" style="color:var(--accent2);">朗文在线查询 →</a>';
+        box.appendChild(online);
+      }).catch(function () {
+        delete localStorage[DICT_FLAG];
+        promptImport();
+      });
+      return;
+    }
     box.innerHTML = renderPopupContent(rec);
     if (rec && hit.matchedAs !== word) {
       var note = document.createElement('div');
@@ -102926,10 +102956,12 @@ document.addEventListener('click', function (e) {
 //  词典导入检查(首次打开)
 // ═══════════════════════════════════
 function checkDictImport() {
-  if (localStorage[DICT_FLAG]) return;
-  indexedDB.databases && indexedDB.databases().then(function (dbs) {
-    var exists = dbs.some(function (d) { return d.name === DICT_DB; });
-    if (exists) { localStorage[DICT_FLAG] = '1'; return; }
+  dictCount().then(function (count) {
+    if (count > 0) {
+      localStorage[DICT_FLAG] = '1';
+      return;
+    }
+    delete localStorage[DICT_FLAG];
     promptImport();
   }).catch(promptImport);
 }
