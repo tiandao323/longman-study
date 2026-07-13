@@ -164,7 +164,7 @@ body {
 #dateFilterPage {
   display:none; position:fixed; inset:0; background:#fff; z-index:95;
   flex-direction:column; width:100%; max-width:var(--max-w);
-  margin:0 auto; left:50%; transform:translateX(-50%); overflow:hidden;
+  margin:0 auto; left:0; right:0; transform:none; overflow:hidden;
 }
 #dateFilterPage.open { display:flex; }
 .date-filter-top {
@@ -175,39 +175,39 @@ body {
   position:absolute; left:18px; width:42px; height:42px; border:none; background:transparent;
   color:#252525; font-size:42px; line-height:1; cursor:pointer; font-family:inherit;
 }
-.date-filter-title { font-size:24px; font-weight:600; color:#262626; }
+.date-filter-title { font-size:21px; font-weight:500; color:#333; }
 .date-filter-summary {
   padding:20px 28px 24px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
 }
 .date-selected-count {
-  display:flex; align-items:center; gap:14px; font-size:25px; font-weight:600; color:#292929;
+  display:flex; align-items:center; gap:12px; font-size:20px; font-weight:500; color:#333;
 }
 .date-selected-count::before {
   content:''; width:6px; height:22px; border-radius:4px; background:#aaa; display:inline-block;
 }
 .select-all-btn {
-  border:none; background:transparent; color:#e86f13; font-size:20px; font-weight:600;
+  border:none; background:transparent; color:#e86f13; font-size:17px; font-weight:500;
   cursor:pointer; font-family:inherit;
 }
 .date-filter-list { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:0 0 84px; }
-.date-year { padding:8px 64px 18px; font-size:20px; color:#a0a0a0; font-weight:500; }
+.date-year { padding:8px 64px 14px; font-size:17px; color:#a0a0a0; font-weight:400; }
 .date-row {
-  display:flex; align-items:center; gap:28px; min-height:78px; margin-left:28px; padding-right:28px;
+  display:flex; align-items:center; gap:22px; min-height:68px; margin-left:28px; padding-right:28px;
   border-bottom:1px solid #f0f0f0; cursor:pointer; user-select:none;
 }
 .date-check {
-  width:36px; height:36px; border:3px solid #aaa; border-radius:12px; flex-shrink:0;
-  display:flex; align-items:center; justify-content:center; color:#fff; font-size:22px; font-weight:800;
+  width:32px; height:32px; border:3px solid #aaa; border-radius:11px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; color:#fff; font-size:20px; font-weight:600;
 }
 .date-row.selected .date-check { border-color:#f57c00; background:#f57c00; }
 .date-row.selected .date-check::before { content:'✓'; }
-.date-row-text { font-size:25px; font-weight:600; color:#2a2a2a; }
+.date-row-text { font-size:20px; font-weight:500; color:#333; }
 .date-confirm {
   position:absolute; left:0; right:0; bottom:0; padding:14px 24px calc(14px + var(--safe-b));
   border-top:1px solid #f2f2f2; background:rgba(255,255,255,0.94); backdrop-filter:blur(10px);
 }
 .date-confirm button {
-  width:100%; border:none; background:transparent; color:#d0d0d0; font-size:22px; font-weight:600;
+  width:100%; border:none; background:transparent; color:#d0d0d0; font-size:19px; font-weight:500;
   padding:10px 0; font-family:inherit; cursor:pointer;
 }
 .date-confirm button.enabled { color:#f57c00; }
