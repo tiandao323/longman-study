@@ -52,32 +52,35 @@ body {
 }
 .list-header .title {
   position:absolute; left:50%; transform:translateX(-50%);
-  font-size:24px; font-weight:700; letter-spacing:0; color:#202124;
+  font-size:24px; font-weight:600; letter-spacing:0; color:#262626;
 }
 .top-icon {
-  width:42px; height:42px; border:none; background:transparent; color:#202124;
+  width:42px; height:42px; border:none; background:transparent; color:#252525;
   font-size:27px; line-height:1; display:flex; align-items:center; justify-content:center;
-  cursor:pointer; font-weight:700; font-family:inherit;
+  cursor:pointer; font-weight:600; font-family:inherit;
 }
 .top-actions { display:flex; align-items:center; gap:8px; margin-left:auto; }
 .top-icon:active { opacity:0.45; }
 .top-icon.small { font-size:24px; }
+.top-icon.search-trigger {
+  width:46px; height:46px; font-size:34px; font-weight:500;
+}
 .top-icon.eye-open { font-size:25px; }
 .top-icon.eye-closed { font-size:26px; color:#555; }
 .eye-glyph {
-  width:30px; height:20px; border:3px solid #202124; border-radius:50%;
+  width:30px; height:20px; border:3px solid #252525; border-radius:50%;
   position:relative; display:inline-block;
 }
 .eye-glyph::after {
-  content:''; width:9px; height:9px; border-radius:50%; background:#202124;
+  content:''; width:9px; height:9px; border-radius:50%; background:#252525;
   position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
 }
 .eye-glyph.closed {
-  height:17px; border:none; border-bottom:3px solid #202124; border-radius:0 0 50% 50%;
+  height:17px; border:none; border-bottom:3px solid #252525; border-radius:0 0 50% 50%;
 }
 .eye-glyph.closed::after {
-  width:4px; height:4px; top:13px; background:#202124;
-  box-shadow:-9px -3px 0 #202124, 9px -3px 0 #202124;
+  width:4px; height:4px; top:13px; background:#252525;
+  box-shadow:-9px -3px 0 #252525, 9px -3px 0 #252525;
 }
 
 .list-tools {
@@ -85,7 +88,7 @@ body {
 }
 .list-tool-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
 .list-count {
-  display:flex; align-items:center; gap:14px; font-size:26px; font-weight:800; color:#202124;
+  display:flex; align-items:center; gap:14px; font-size:25px; font-weight:600; color:#292929;
   white-space:nowrap;
 }
 .list-count::before {
@@ -94,7 +97,7 @@ body {
 .tool-actions { display:flex; align-items:center; gap:8px; flex-shrink:0; }
 .date-filter-btn,
 .sort-filter-btn {
-  border:none; border-radius:22px; padding:9px 16px; font-size:16px; font-weight:700;
+  border:none; border-radius:22px; padding:9px 16px; font-size:16px; font-weight:600;
   color:#e86f13; background:#fff2e8; cursor:pointer; white-space:nowrap; font-family:inherit;
 }
 .sort-filter-btn { padding:9px 12px; min-width:58px; }
@@ -115,7 +118,7 @@ body {
 
 #wordList { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
 .word-group-head {
-  padding:24px 28px 6px; font-size:18px; color:#9a9a9a; font-weight:700;
+  padding:24px 28px 6px; font-size:18px; color:#9a9a9a; font-weight:500;
 }
 .word-item {
   margin-left:28px; padding:18px 28px 18px 0; cursor:pointer; user-select:none;
@@ -125,7 +128,7 @@ body {
 .word-item .wi-left { flex:1; }
 .word-item .wi-head { display:flex; align-items:baseline; gap:12px; min-width:0; }
 .word-item .wi-en {
-  font-size:24px; font-weight:700; color:#222; letter-spacing:0;
+  font-size:23px; font-weight:600; color:#2a2a2a; letter-spacing:0;
   line-height:1.25; white-space:nowrap;
 }
 .word-item .wi-phonetic {
@@ -133,7 +136,7 @@ body {
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 .word-item .wi-cn {
-  display:none; font-size:21px; color:#2b2b2b; margin-top:12px;
+  display:none; font-size:20px; color:#343434; margin-top:12px;
   line-height:1.55; font-weight:400;
 }
 .word-item .wi-cn-line { margin-top:3px; }
@@ -152,7 +155,7 @@ body {
 
 .floating-study {
   position:absolute; left:50%; bottom:calc(18px + var(--safe-b)); transform:translateX(-50%);
-  border:none; border-radius:28px; background:#fff; color:#f57c00; font-size:16px; font-weight:800;
+  border:none; border-radius:28px; background:#fff; color:#f57c00; font-size:16px; font-weight:600;
   padding:13px 24px; box-shadow:0 8px 28px rgba(0,0,0,0.16); cursor:pointer; font-family:inherit;
 }
 .floating-study:active { opacity:0.75; }
@@ -170,24 +173,24 @@ body {
 }
 .date-filter-top .back-btn {
   position:absolute; left:18px; width:42px; height:42px; border:none; background:transparent;
-  color:#202124; font-size:42px; line-height:1; cursor:pointer; font-family:inherit;
+  color:#252525; font-size:42px; line-height:1; cursor:pointer; font-family:inherit;
 }
-.date-filter-title { font-size:24px; font-weight:800; color:#202124; }
+.date-filter-title { font-size:24px; font-weight:600; color:#262626; }
 .date-filter-summary {
   padding:20px 28px 24px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
 }
 .date-selected-count {
-  display:flex; align-items:center; gap:14px; font-size:26px; font-weight:800; color:#202124;
+  display:flex; align-items:center; gap:14px; font-size:25px; font-weight:600; color:#292929;
 }
 .date-selected-count::before {
   content:''; width:6px; height:22px; border-radius:4px; background:#aaa; display:inline-block;
 }
 .select-all-btn {
-  border:none; background:transparent; color:#e86f13; font-size:20px; font-weight:800;
+  border:none; background:transparent; color:#e86f13; font-size:20px; font-weight:600;
   cursor:pointer; font-family:inherit;
 }
 .date-filter-list { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:0 0 84px; }
-.date-year { padding:8px 64px 18px; font-size:20px; color:#a0a0a0; font-weight:700; }
+.date-year { padding:8px 64px 18px; font-size:20px; color:#a0a0a0; font-weight:500; }
 .date-row {
   display:flex; align-items:center; gap:28px; min-height:78px; margin-left:28px; padding-right:28px;
   border-bottom:1px solid #f0f0f0; cursor:pointer; user-select:none;
@@ -198,13 +201,13 @@ body {
 }
 .date-row.selected .date-check { border-color:#f57c00; background:#f57c00; }
 .date-row.selected .date-check::before { content:'✓'; }
-.date-row-text { font-size:26px; font-weight:800; color:#202124; }
+.date-row-text { font-size:25px; font-weight:600; color:#2a2a2a; }
 .date-confirm {
   position:absolute; left:0; right:0; bottom:0; padding:14px 24px calc(14px + var(--safe-b));
   border-top:1px solid #f2f2f2; background:rgba(255,255,255,0.94); backdrop-filter:blur(10px);
 }
 .date-confirm button {
-  width:100%; border:none; background:transparent; color:#d0d0d0; font-size:22px; font-weight:800;
+  width:100%; border:none; background:transparent; color:#d0d0d0; font-size:22px; font-weight:600;
   padding:10px 0; font-family:inherit; cursor:pointer;
 }
 .date-confirm button.enabled { color:#f57c00; }
@@ -499,7 +502,7 @@ body {
     <button class="top-icon" type="button" aria-label="返回">‹</button>
     <span class="title">red book</span>
     <div class="top-actions">
-      <button class="top-icon small" type="button" onclick="openSearch()" aria-label="搜索">⌕</button>
+      <button class="top-icon small search-trigger" type="button" onclick="openSearch()" aria-label="搜索">⌕</button>
       <button class="top-icon small eye-open" id="meaningToggleBtn" type="button" onclick="toggleMeanings()" aria-label="显示释义"><span class="eye-glyph" id="meaningToggleIcon"></span></button>
       <button class="top-icon small" type="button" onclick="startStudy()" aria-label="开始学习">•••</button>
     </div>
