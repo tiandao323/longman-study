@@ -3,13 +3,16 @@
 ## Goal
 
 Add list-page filters under the existing "开始学习" area in `index.html` so the
-word list can be filtered by import batch and ordered alphabetically.
+word list can be filtered by import batch and ordered alphabetically. Remove the
+little-used status filter chips from that row.
 
 ## Scope
 
 - Modify only the list page UI and list rendering logic in `index.html`.
 - Do not change the `WORDS` data, detail page, SRS storage, or study-mode queue.
 - The new filters affect only the home list display.
+- Keep status badges on each word item, but remove status filtering by 新词,
+  学习中, 待复习, and 已掌握.
 
 ## Import Batch Rules
 
@@ -21,15 +24,17 @@ the stable append ranges in `WORDS`:
 - `699-810`: 2026-07-13 import.
 
 These ranges match the existing import history and preserve SRS index behavior.
+The UI is generated from the batch configuration. If future imports append cards
+after the last configured range, the list automatically shows an extra `新增`
+batch for those unfiled cards until the batch configuration is named properly.
 
 ## UI
 
-Keep the current status chips: 全部, 新词, 学习中, 待复习, 已掌握, 搜索.
-
-Add one compact secondary filter row below it:
+Use the current chip row for the new filters:
 
 - 导入: 全部批次, 旧词, 7月11, 7月13.
 - 排序: 默认, A-Z, Z-A.
+- Search icon: keep the existing search toggle.
 
 The row scrolls horizontally like the existing chip row to fit mobile screens.
 
@@ -37,10 +42,9 @@ The row scrolls horizontally like the existing chip row to fit mobile screens.
 
 `renderList()` applies filters in this order:
 
-1. Status filter.
-2. Import batch filter.
-3. Search query.
-4. Sort mode.
+1. Import batch filter.
+2. Search query.
+3. Sort mode.
 
 Default sort preserves `WORDS` order. Alphabetical sort changes only display
 order and still opens details by the original `WORDS` index.
@@ -49,5 +53,6 @@ order and still opens details by the original `WORDS` index.
 
 - `WORDS.length` remains 811.
 - No `WORDS` content changes.
-- Status, import, search, and sort filters can combine.
+- Import, search, and sort filters can combine.
+- Status filter chips are absent from the list page.
 - `startStudy()` still uses `getDueWords()` and is not affected by list sort.

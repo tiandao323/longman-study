@@ -70,13 +70,11 @@ body {
   -webkit-overflow-scrolling:touch; scrollbar-width:none; flex-shrink:0;
 }
 .filter-row::-webkit-scrollbar { display:none; }
-.filter-row.secondary {
-  padding-top:7px; padding-bottom:7px; background:#fafafa;
-}
 .filter-label {
   flex-shrink:0; font-size:13px; color:var(--text3); font-weight:600;
   display:flex; align-items:center; min-height:32px; padding:0 2px 0 0;
 }
+.filter-chip-group { display:flex; gap:6px; flex-shrink:0; }
 .chip {
   flex-shrink:0; padding:6px 14px; font-size:14px; border-radius:16px;
   cursor:pointer; color:var(--text2); white-space:nowrap;
@@ -411,23 +409,13 @@ body {
     <button class="study-btn" onclick="startStudy()">🎯 开始学习</button>
   </div>
   <div class="filter-row">
-    <span class="chip status-chip active" onclick="setFilter('all',this)">全部</span>
-    <span class="chip status-chip" onclick="setFilter(0,this)">🆕 新词</span>
-    <span class="chip status-chip" onclick="setFilter(1,this)">📚 学习中</span>
-    <span class="chip status-chip" onclick="setFilter(2,this)">🔄 待复习</span>
-    <span class="chip status-chip" onclick="setFilter(3,this)">✅ 已掌握</span>
-    <span class="chip" onclick="openSearch()">🔍</span>
-  </div>
-  <div class="filter-row secondary">
     <span class="filter-label">导入</span>
-    <span class="chip import-chip active" onclick="setImportFilter('all',this)">全部批次</span>
-    <span class="chip import-chip" onclick="setImportFilter('base',this)">旧词</span>
-    <span class="chip import-chip" onclick="setImportFilter('2026-07-11',this)">7月11</span>
-    <span class="chip import-chip" onclick="setImportFilter('2026-07-13',this)">7月13</span>
+    <span class="filter-chip-group" id="importFilterChips"></span>
     <span class="filter-label">排序</span>
     <span class="chip sort-chip active" onclick="setSortMode('default',this)">默认</span>
     <span class="chip sort-chip" onclick="setSortMode('az',this)">A-Z</span>
     <span class="chip sort-chip" onclick="setSortMode('za',this)">Z-A</span>
+    <span class="chip" onclick="openSearch()">🔍</span>
   </div>
   <div class="search-bar" id="searchBar">
     <input type="text" placeholder="搜索单词..." id="searchInput" oninput="renderList()">
@@ -101798,11 +101786,14 @@ function initSRS(i) {
   if (!srs[i]) srs[i] = { ease: 2.5, interval: 0, reps: 0, nextReview: 0 };
 }
 
-const FILTERS = { all: -1, new: 0, learning: 1, review: 2, mastered: 3 };
-let filter = 'all';
 let importFilter = 'all';
 let sortMode = 'default';
 let searchQuery = '';
+const IMPORT_BATCHES = [
+  { id: 'base', label: '旧词', start: 0, end: 584 },
+  { id: '2026-07-11', label: '7月11', start: 585, end: 698 },
+  { id: '2026-07-13', label: '7月13', start: 699, end: 810 }
+];
 
 function getStatus(i) {
   const s = srs[i];
@@ -101836,12 +101827,6 @@ function applyRating(i, r) {
 // ═══════════════════════════════════
 //  LIST PAGE
 // ═══════════════════════════════════
-function setFilter(f, el) {
-  filter = f;
-  document.querySelectorAll('.status-chip').forEach(function (c) { c.classList.remove('active'); });
-  if (el) el.classList.add('active');
-  renderList();
-}
 function setImportFilter(f, el) {
   importFilter = f;
   document.querySelectorAll('.import-chip').forEach(function (c) { c.classList.remove('active'); });
@@ -101854,10 +101839,32 @@ function setSortMode(mode, el) {
   if (el) el.classList.add('active');
   renderList();
 }
+function getImportBatches() {
+  const batches = IMPORT_BATCHES.slice();
+  const lastKnownEnd = batches.length ? batches[batches.length - 1].end : -1;
+  if (WORDS.length - 1 > lastKnownEnd) {
+    batches.push({ id: 'unfiled', label: '新增', start: lastKnownEnd + 1, end: WORDS.length - 1 });
+  }
+  return batches;
+}
 function getImportBatch(i) {
-  if (i < 585) return 'base';
-  if (i < 699) return '2026-07-11';
-  return '2026-07-13';
+  const batches = getImportBatches();
+  for (let n = 0; n < batches.length; n++) {
+    if (i >= batches[n].start && i <= batches[n].end) return batches[n].id;
+  }
+  return 'unfiled';
+}
+function importChip(id, label, active) {
+  return '<span class="chip import-chip' + (active ? ' active' : '') +
+    '" onclick="setImportFilter(&quot;' + esc(id) + '&quot;,this)">' + esc(label) + '</span>';
+}
+function renderImportFilterChips() {
+  const cont = document.getElementById('importFilterChips');
+  let html = importChip('all', '全部批次', true);
+  getImportBatches().forEach(function (batch) {
+    html += importChip(batch.id, batch.label, false);
+  });
+  cont.innerHTML = html;
 }
 function openSearch() {
   const sb = document.getElementById('searchBar');
@@ -101877,7 +101884,6 @@ function renderList() {
   let html = '';
   const indices = [];
   WORDS.forEach(function (w, i) {
-    if (filter !== 'all' && getStatus(i) !== filter) return;
     if (importFilter !== 'all' && getImportBatch(i) !== importFilter) return;
     if (searchQuery && w.word.toLowerCase().indexOf(searchQuery) === -1) return;
     indices.push(i);
@@ -102561,6 +102567,7 @@ function promptImport() {
 loadSRS();
 WORDS.forEach(function (_, i) { initSRS(i); });
 saveSRS();
+renderImportFilterChips();
 renderList();
 checkDictImport();
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js').catch(function () {}); }
